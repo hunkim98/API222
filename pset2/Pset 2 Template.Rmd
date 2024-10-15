@@ -1,0 +1,218 @@
+---
+title: "API 222 Problem Set 2"
+subtitle: "Machine Learning and Big Data Analytics: Fall 2024"
+output: pdf_document
+date: "Due at 11:59am on October 23 - submit on Gradescope"
+---
+
+```{r, include=FALSE, message=FALSE, warning=FALSE}
+# The needed libraries
+library(tidyverse)
+library(stargazer)
+library(FNN)
+library(kableExtra)
+library(glmnet)
+
+# Ask R to not present numbers using scientific notation
+options(scipen = 999)
+```
+
+This problem set is worth 30 points in total. To get full credit, submit your code along with a write-up of your answers. This should either be done in R Markdown or Jupyter Notebook, submitted in one knitted PDF.
+
+
+## Final Project Groups (0 pts)
+
+Please join one of 30 final project groups that have been created on this \color{blue} [Canvas](https://canvas.harvard.edu/courses/146422/groups#tab-26761) \color{black} page. 
+
+Details about the final project can be found on this \color{blue} [Canvas](https://canvas.harvard.edu/courses/146422/files/folder/Final%20Project) \color{black} page. You just need to form your group by October 23. The main project milestones will be after the midterm. We recommend forming groups of 5 students. All students working together should join the same group. PhD students need to work individually (see details on Canvas). If you are a PhD student or are otherwise working alone, please form a group by yourself. Please email Jacob if you have questions about this assignment or the final project.
+
+## Conceptual Questions (15 pts)
+
+1. Consider the four main classification methods that have been presented thus far this semester: logistic regression, k-Nearest Neighbors, linear discriminant analysis (LDA), and quadratic discriminant analysis (QDA. Which of these methods may be appropriate if you know the decision boundary between the classes is linear? (3pts)
+
+
+
+2. Suppose you had the following data and you are using KNN Regression with Euclidean distance. Consider the prediction problem where you want to predict Y for the data point X1 = X2 = X3 = 0.
+
+| X1 | X2 | X3 | Y |
+|----|----|----|---|
+| 0  | 3.5  | 2  | 2 |
+| 1  | 2.1  | 3  | 1 |
+| 2  | 4.7  | 1  | 3 |
+| 1  | 3.9  | 1  | 2 |
+| 0  | 2.9  | 2  | 4 |
+| 1  | 1.5  | 2  | 1 |
+| 1  | 3.5  | 4  | 2 |
+
+
+(a) Compute the Euclidean distance between each observation and the test point, X1 = X2 = X3 = 0. (1pt)
+
+
+(b) What is your prediction with K = 2? Why? (1pt)
+
+
+(c) If the Bayes decision boundary in this problem is highly nonlinear, then would we expect the best value for K to be large or small? Why? (1pt)
+
+
+3. Consider we conduct a research study analyzing the risk factors for developing prostate cancer among men, with variables \(X_1 = \text{age (years)}\), \(X_2 = \text{family history of prostate cancer (0 = no, 1 = yes)}\), \(X_3 = \text{smoking status (0 = non-smoker, 1 = smoker)}\), and \(Y = \text{probability of developing prostate cancer}\). A logistic regression analysis is performed, resulting in estimated coefficients \(\hat{\beta}_1 = 0.06\), \(\hat{\beta}_2 = 1.2\), \(\hat{\beta}_3 = 0.8\), and \(\hat{\beta}_0 = -3.5\).
+
+(a) Interpret \(\hat{\beta}_2\). (1 pt)
+
+
+
+
+(b) Estimate the probability that a 60-year-old man with a family history of prostate cancer who is a smoker develops prostate cancer. (2 pts)
+
+
+
+
+4. k-fold cross-validation
+
+(a) Briefly explain how k-fold cross-validation is implemented. (2pts)
+
+
+
+(b) What are the advantages of k-fold cross-validation relative to the validation set approach? (1pt)
+
+
+
+5. Suppose you want to minimize the false negative rate in your classification. You run two models: A and B. AUC for Model A is 0.7 and for Model B is 0.8. Can you conclude that you should choose Model B? Why or why not? (3 pts)
+
+\newpage
+
+
+
+## Applied Questions (15 pts)
+
+**Predicting Hospital Length of Stay**
+
+For the next portion of this assignment you will be working with the `LengthOfStay.csv` dataset. This dataset has data points on patients admitted into hospital, indicators of their health condition and how long they were admitted in the hospital. 
+
+This is an important problem in healthcare. In order for hospitals to optimize resource allocation, it is important to predict accurately how long a newly admitted patient will stay in the hospital. 
+
+1. What are the dimensions of the dataset? (1 pt)
+
+```{r, message=FALSE, warning=FALSE}
+# code
+```
+
+2. Use the `cor()` function to display the correlations of all **continuous** variables in the dataset. Which variables is most highly correlated with `lengthofstay`? (2 pts)
+
+```{r}
+# code
+```
+
+
+
+
+Consider the prediction problem where you want to predict the length of stay for a patient (`lengthofstay`) against all other variables available in the data set.
+
+3. Run ridge regression with cross-validation and standardized features using the canned function `cv.glmnet` from the package `glmnet`. You can use the $\lambda$ sequence generated by `cv.glment` (you do not need to provide your own $\lambda$ sequence). In order to receive credit for this question, make the line immediately preceding this command say `set.seed(222)` and run the two lines together. Please report all numbers by rounding to three decimal places. (2 pts)
+
+```{r}
+# code
+```
+
+
+(a) Which $\lambda$ had the lowest mean cross-validation error? (1 pt)
+
+
+```{r}
+# code
+```
+
+
+(b) What was the cross-validation error? (1 pt)
+
+```{r}
+# code
+```
+
+(c) What was the standard error of the mean cross-validation error for this value of $\lambda$? (1 pt)
+
+```{r}
+# code
+```
+
+
+(d) What was the largest value of $\lambda$ whose mean cross validation error was within one standard deviation of the lowest cross-validation error? (1 pt)
+
+```{r}
+# code
+```
+
+4. Produce the regression coefficients for the ridge regression model with the $\lambda$ value that minimizes the cross-validation error. Compare these coefficients with a standard linear regression model. (2 pts)
+
+```{r}
+# code
+```
+
+5. Now consider the same prediction problem. Implement your own 5-fold cross-validation routine for KNN for $K = 1, ..., 50$ (write the cross-validation routine yourself rather than using a canned package). Include the snippet of code you wrote here. It should not exceed 20 lines. (4pts)
+
+```{r, message=FALSE, warning=FALSE}
+# code
+```
+
+(a) Plot of mean cross-validation MSE as a function of $k$. 
+
+```{r}
+# code
+```
+
+
+(b) The best k according to CV is
+
+
+```{r}
+# code
+```
+
+
+
+(c) The cross-validation error for the best k is
+
+
+```{r}
+# code
+```
+
+
+
+\newpage
+
+
+## Challenge Problem (just for fun 0 pts)
+
+Tasks:
+
+(a) Predict Length of Stay with LASSO Regression with Cross-Validation:
+
+- Use the `cv.glmnet` function from the `glmnet` package to perform LASSO regression with cross-validation.
+
+- Set `alpha = 1` to specify LASSO regression.
+
+(b) Selecting the Best Model:
+
+- Identify the value of lambda that minimizes the cross-validation error.
+
+- Report this value of lambda and the corresponding cross-validation error (rounded to three decimal places).
+
+(c) Visualization:
+
+- Plot the cross-validation curve (cross-validation error versus log(lambda)) using `plot(cv.glmnet_object)`.
+
+- Plot the coefficient paths as a function of log(lambda) to visualize how coefficients change with different lambda values.
+
+(d) Interpretation:
+
+- Discuss the variables that have been selected by the LASSO model.
+
+- Compare these variables to those in the standard linear regression model you previously fitted.
+
+- Comment on any differences and provide possible explanations for why certain variables were eliminated.
+
+```{r}
+# code
+```
+
+

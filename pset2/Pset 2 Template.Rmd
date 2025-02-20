@@ -248,10 +248,10 @@ cross_validate_knn <- function(full_data, y_index, k_max=50, folds=5) {
     for (fold in 1:folds) {
       train_data <- full_data[fold_ids != fold, ]
       test_data <- full_data[fold_ids == fold, ]
-      knn_model <- knn(train = train_data[, -y_index], 
+      knn_model <- knn.reg(train = train_data[, -y_index], 
                        test = test_data[, -y_index],
-                       cl = train_data[, y_index], k = k)
-      fold_errors <- c(fold_errors, mean(knn_model != test_data[, y_index]))
+                       y = train_data[, y_index], k = k)
+      fold_errors <- c(fold_errors, mean((knn_model$pred - test_data[, y_index])^2))
     }
     cv_errors <- c(cv_errors, mean(fold_errors))
   }
